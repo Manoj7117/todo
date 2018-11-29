@@ -19,7 +19,10 @@ export class Input extends React.Component {
                 taskName: this.state.taskName,
                 isCompleted: false
             };
-            this.props.change(task);
+
+            if(task.taskName) {
+                this.props.change(task);
+            }
             this.setState({taskName:''})
         }
     }
