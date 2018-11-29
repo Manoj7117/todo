@@ -16,7 +16,7 @@ class App extends React.Component{
         }
     }
 
-    componentWillMount(){
+    componentDidMount(){
         const taskRef=db.ref('tasks');
         taskRef.on('value', (data) => {
             let tasks = data.val();
