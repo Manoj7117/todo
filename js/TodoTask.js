@@ -1,4 +1,5 @@
 const React = require('react');
+import firebase from "./firebase";
 
 export class TodoTask extends React.Component {
     constructor(props) {
@@ -45,6 +46,7 @@ export class TodoTask extends React.Component {
     changeName(task){
         task.taskName=this.state.taskName;
         this.setState({isEditing:false});
+        firebase.database().ref('tasks').child(task.tid).update(task)
     }
 
     render(){

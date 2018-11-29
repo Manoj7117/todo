@@ -4,7 +4,9 @@ import {Header} from "./Header";
 import {Input} from "./Input";
 import {TodoTask} from "./TodoTask";
 import {TodoActions} from "./TodoActions";
+import firebase from './firebase.js';
 
+const db = firebase.database();
 class App extends React.Component{
     constructor(props){
         super(props);
@@ -14,15 +16,33 @@ class App extends React.Component{
         }
     }
 
+    componentWillMount(){
+        const taskRef=db.ref('tasks');
+        taskRef.on('value', (data) => {
+            let tasks = data.val();
+            let newState=[];
+            for (let taskID in tasks) {
+                newState.push({
+                    tid:taskID,
+                    taskName: tasks[taskID].taskName,
+                    isCompleted: tasks[taskID].isCompleted
+                });
+            }
+            this.setState({tasks:newState})
+        });
+    }
+
     addTask(newTask){
         this.setState(prevState=>({
             tasks:prevState.tasks.concat(newTask)
         }));
+        db.ref('tasks').push(newTask);
     }
 
     update(currentTask){
         currentTask.isCompleted=!currentTask.isCompleted;
-        this.setState({})
+        this.setState({});
+        db.ref('tasks').child(currentTask.tid).update(currentTask)
     }
 
 
@@ -30,7 +50,9 @@ class App extends React.Component{
         const index = this.state.tasks.indexOf(task);
         const newTasks = this.state.tasks;
         newTasks.splice(index, 1);
-        this.setState({tasks:newTasks})
+        this.setState({tasks:newTasks});
+        const tasksRef = db.ref(`tasks/${task.tid}`);
+        tasksRef.remove();
     }
 
     show(action){
@@ -39,6 +61,10 @@ class App extends React.Component{
 
     clearCompleted(){
         const activeTasks = this.state.tasks.filter(task => {
+            if(task.isCompleted){
+                const tasksRef = db.ref(`tasks/${task.tid}`);
+                tasksRef.remove();
+            }
             return !task.isCompleted;
         });
         this.setState({tasks:activeTasks})
@@ -47,6 +73,7 @@ class App extends React.Component{
     toggleAll(event){
         const allTasks = this.state.tasks.map((task) => {
             task.isCompleted = event.target.checked;
+            db.ref('tasks').child(task.tid).update(task);
             return task
         });
         this.setState({tasks:allTasks})
