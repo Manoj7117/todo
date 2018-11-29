@@ -3,6 +3,7 @@ const ReactDOM = require('react-dom');
 import {Header} from "./Header";
 import {Input} from "./Input";
 import {TodoTask} from "./TodoTask";
+import {TodoActions} from "./TodoActions";
 
 class App extends React.Component{
     constructor(props){
@@ -32,11 +33,24 @@ class App extends React.Component{
         this.setState({tasks:newTasks})
     }
 
+    show(action){
+        this.setState({nowShowing:action.target.text})
+    }
+
+    clearCompleted(){
+        const activeTasks = this.state.tasks.filter(task => {
+            return !task.isCompleted;
+        });
+        this.setState({tasks:activeTasks})
+    }
+
 
     render(){
         let e = React.createElement;
         let tasksList;
         let taskList;
+        let todoActions;
+        let count=0;
         if(this.state.tasks.length) {
             taskList = this.state.tasks.filter(task => {
                 switch (this.state.nowShowing) {
@@ -51,15 +65,25 @@ class App extends React.Component{
                     key: task.tid, task: task, update: this.update.bind(this, task),
                     delete: this.delete.bind(this, task)}, null)
             );
+
+            this.state.tasks.map(task=>{
+                if(task.isCompleted){
+                    count=count+1;
+                }
+            });
+
+            let activeTasks=this.state.tasks.length-count;
+
+            todoActions = e(TodoActions,{completedTasks:count,activeTasks:activeTasks,show:this.show.bind(this),
+                clearCompleted:this.clearCompleted.bind(this),nowShowing:this.state.nowShowing,},null);
         }
 
          return(
             e('div',null,
                 e(Header,null,null),
                 e(Input,{change:this.addTask.bind(this)},null),
-                e('section',{className:"main"},
-                    e('ul',{className:"todo-list"},tasksList),
-                )
+                e('section',{className:"main"}, e('ul',{className:"todo-list"},tasksList),),
+                e('div',null,todoActions)
             )
         )
     }
