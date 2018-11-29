@@ -52,6 +52,11 @@ class App extends React.Component{
         this.setState({tasks:allTasks})
     }
 
+    changeName(task,event){
+        task.taskName=event.target.value;
+        this.setState({})
+    }
+
 
     render(){
         let e = React.createElement;
@@ -71,8 +76,8 @@ class App extends React.Component{
 
             tasksList = taskList.map((task) =>
                 e(TodoTask, {
-                    key: task.tid, task: task, update: this.update.bind(this, task),
-                    delete: this.delete.bind(this, task)}, null)
+                    key: task.tid, task: task, update: this.update.bind(this, task)
+                    ,changeName:this.changeName.bind(this,task),delete: this.delete.bind(this, task)}, null)
             );
 
             this.state.tasks.map(task=>{
