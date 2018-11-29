@@ -44,6 +44,14 @@ class App extends React.Component{
         this.setState({tasks:activeTasks})
     }
 
+    toggleAll(event){
+        const allTasks = this.state.tasks.map((task) => {
+            task.isCompleted = event.target.checked;
+            return task
+        });
+        this.setState({tasks:allTasks})
+    }
+
 
     render(){
         let e = React.createElement;
@@ -51,6 +59,7 @@ class App extends React.Component{
         let taskList;
         let todoActions;
         let count=0;
+        let toggleAll;
         if(this.state.tasks.length) {
             taskList = this.state.tasks.filter(task => {
                 switch (this.state.nowShowing) {
@@ -76,13 +85,19 @@ class App extends React.Component{
 
             todoActions = e(TodoActions,{completedTasks:count,activeTasks:activeTasks,show:this.show.bind(this),
                 clearCompleted:this.clearCompleted.bind(this),nowShowing:this.state.nowShowing,},null);
+
+            toggleAll=e('input',{id:"toggle-all",className:"toggle-all",checked:count===this.state.tasks.length,
+                onChange:this.toggleAll.bind(this),type:"checkbox"},null);
         }
 
          return(
             e('div',null,
                 e(Header,null,null),
                 e(Input,{change:this.addTask.bind(this)},null),
-                e('section',{className:"main"}, e('ul',{className:"todo-list"},tasksList),),
+                e('section',{className:"main"},
+                    toggleAll,
+                    e('label',{htmlFor:"toggle-all"},null),
+                    e('ul',{className:"todo-list"},tasksList),),
                 e('div',null,todoActions)
             )
         )
