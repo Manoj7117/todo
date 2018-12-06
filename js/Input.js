@@ -4,7 +4,6 @@ export class Input extends React.Component {
     constructor(props) {
         super(props);
         this.state = {taskName:''};
-
         this.handleChange = this.handleChange.bind(this);
         this.keyPress = this.keyPress.bind(this);
     }
@@ -19,9 +18,8 @@ export class Input extends React.Component {
                 taskName: this.state.taskName,
                 isCompleted: false
             };
-
             if(task.taskName) {
-                this.props.change(task);
+                this.props.addTask(task);
             }
             this.setState({taskName:''})
         }

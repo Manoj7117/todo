@@ -23,7 +23,6 @@ export class TodoTask extends React.Component {
     }
 
     keyPress(event){
-        console.log(event.which)
         if (event.which === 27) {
             this.setState({taskName: this.props.task.taskName});
             console.log(event.which)
@@ -39,7 +38,6 @@ export class TodoTask extends React.Component {
         } else {
             this.props.delete();
         }
-        console.log("manoj")
         this.setState({isEditing:false})
     }
 
